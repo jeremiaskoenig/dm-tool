@@ -183,6 +183,19 @@ public class MapControl : Control
         GlobalRefresh?.Invoke(this);
     }
 
+    private Coordinate GridCellAt(int x , int y)
+    {
+        var xStart = (map.GridOffset.X + Offset.X) * Zoom;
+        var yStart = (map.GridOffset.Y + Offset.Y) * Zoom;
+        var xEnd = (map.GridOffset.X + Offset.X + map.GridSize.X) * Zoom;
+        var yEnd = (map.GridOffset.Y + Offset.Y + map.GridSize.Y) * Zoom;
+        
+        var xStep = xEnd - xStart;
+        var yStep = yEnd - yStart;
+
+        return ((int)(x / xStep), (int)(y / yStep));
+    }
+
     private (Coordinate start, Coordinate end) GetGridSelection(Point start, Point end)
     {
         int dsX = start.X;

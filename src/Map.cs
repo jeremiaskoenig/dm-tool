@@ -1,5 +1,3 @@
-
-
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -51,13 +49,21 @@ public class Map
             cells[x, y] = CellState.DefaultStates.Hidden;
     }
 
+    public bool IsCellValid(Coordinate c)
+    {
+        return c.X >= 0
+            && c.Y >= 0
+            && c.X < gridSize.X
+            && c.Y < gridSize.Y;
+    }
+
     // Render information
     public Image Image => image;
 
     private readonly Image image; 
     private readonly Image renderImage;
 
-    private static class Brushes
+    public static class Brushes
     {
         private static readonly Brush hiddenPreview = new SolidBrush(Color.FromArgb(128, 0, 0, 0));
         private static readonly Brush hiddenLive = new SolidBrush(Color.Black);
@@ -90,26 +96,29 @@ public class Map
         float cellWidth = image.Width / (float)width;
         float cellHeight = image.Height / (float)height;
 
+        // TODO: - Draw solid color around the grid
+        //       - Respect the new grid offset / size
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 if (cells[x, y] == CellState.DefaultStates.Hidden)
-                    g.FillRectangle(Brushes.Hidden(isPreview), x * cellWidth, y * cellHeight, cellWidth, cellHeight);
+                    g.FillRectangle(Brushes.Hidden(isPreview), gridOffset.X + x * cellWidth, gridOffset.Y + y * cellHeight, cellWidth, cellHeight);
             }
         }
 
-        if (isPreview)
-        {
-            for (int x = 0; x <= width; x++)
-            {
-                g.DrawLine(Brushes.Grid, x * cellWidth, 0, x * cellWidth, image.Height);
-            }
-            for (int y = 0; y <= height; y++)
-            {
-                g.DrawLine(Brushes.Grid, 0, y * cellHeight, image.Width, y * cellHeight);
-            }
-        }
+        // TODO: Move the grid render code to the map control
+        //if (isPreview)
+        //{
+        //    for (int x = 0; x <= width; x++)
+        //    {
+        //        g.DrawLine(Brushes.Grid, x * cellWidth, 0, x * cellWidth, image.Height);
+        //    }
+        //    for (int y = 0; y <= height; y++)
+        //    {
+        //        g.DrawLine(Brushes.Grid, 0, y * cellHeight, image.Width, y * cellHeight);
+        //    }
+        //}
 
         return renderImage;
     }
@@ -156,6 +165,12 @@ public readonly struct CellState
         if (obj is string s)
             return base.Equals((CellState)s);
         return base.Equals(obj);
+    }
+
+    public override int GetHashCode()
+    {
+        // default implementation since the equals only checks for the implicit string cast
+        return base.GetHashCode();
     }
 }
 

@@ -82,6 +82,14 @@ public class FormMain : Form
                 Map = map,
             };
             overlay.Show();
+
+            var form = new Form();
+            form.Controls.Add(new NewMapControl(map)
+            {
+                IsPreview = true,
+                Dock = DockStyle.Fill
+            });
+            form.Show();
         };
 
         var itemClose = menuFile.DropDownItems.Add("&Beenden");
@@ -93,7 +101,7 @@ public class FormMain : Form
 
     protected override void OnLoad(EventArgs e)
     {
-        //new FormLogger().Show();
+        new FormLogger().Show();
         WindowState = FormWindowState.Maximized;
     }
 }
